@@ -1,0 +1,118 @@
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
+
+<body>
+  <div id='app'>
+    <button v-on:click='show = !show'>Toggle</button>
+    <transition name='fade' v-on:before-enter='enter'>
+      <h1 v-if='show'>L O R Y</h1>
+    </transition>
+    <button v-on:click='show2 = !show2'>Toggle2</button>
+    <transition name='fade2' enter-active-class="animated tada" leave-active-class="animated bounceOutRight">
+      <h1 v-if='show2'>L O R Y</h1>
+    </transition>
+    <button v-on:click='add'>Add</button>
+    <button v-on:click='remove'>Remove</button>
+    <button v-on:click='shuffle'>Shuffle</button>
+    <transition-group name='list' tag="p">
+      <span v-for="item in list" v-bind:key="item">
+        {{ item }}
+      </span>
+    </transition-group>
+  </div>
+  <input type="range" min="0" max='100'>
+</body>
+
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      show: true,
+      show2: true,
+      next: 11,
+      list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    },
+    methods: {
+      enter: function () {
+        console.log(1)
+      },
+      randomIndex: function () {
+        return Math.floor(Math.random() * this.list.length)
+      },
+      remove: function () {
+        this.list.splice(this.randomIndex(), 1)
+      },
+      add: function () {
+        this.list.splice(this.randomIndex(), 0, this.next++)
+      },
+      shuffle: function () {
+        console.log('shuffle')
+      this.list = _.shuffle(this.list)}
+    }
+  })
+</script>
+
+<style>
+  /* .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter,
+  .fade-leave-to {
+    opacity: 0;
+  } */
+
+  /* .fade-enter-active {
+    transition: all .3s ease;
+  }
+  .fade-leave-active {
+    transition: all .5s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  }
+  .fade-enter,
+  .fade-leave-to {
+    transform: translateX(10px);
+    opacity: 0;
+  } */
+
+  .fade-enter-active {
+    animation: bounce-in .5s;
+  }
+
+  .fade-leave-active {
+    animation: bounce-in .5s reverse;
+  }
+
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.5);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  .list-item {
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .list-enter-active,
+  .list-leave-active {
+    transition: all 1s;
+  }
+
+  .list-enter,
+  .list-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .list-move {
+    transition: transform 1s;
+  }
+</style>

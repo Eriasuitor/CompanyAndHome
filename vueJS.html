@@ -1,31 +1,151 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8">
-<title>Vue Test</title>
-<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+  <meta charset="utf-8">
+  <title>Vue Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
+
 <body>
-<div id="app">
-  <p>{{ message }}</p>
-</div>
+  <bs-date-input data-3d-date-picker="true"></bs-date-input>
+  <!-- <div id="app">
+    <p>{{ message }}</p>
+    <span v-html='hmsg'></span>
+    {{msgRes}}
+  </div> -->
+  <div id="app-7">
+    <ol>
+      <todo-item
+        v-for="item in groceryList"
+        v-bind:todo="item"
+        v-bind:key="item.id">
+      </todo-item>
+    </ol>
+    {{tot}}
+    <my-child my-message='CN' v-on:f3='f1'>12345</my-child>
+    <my-child my-message='USA' v-on:f3='f1'></my-child>
+  </div>
+  <!-- <div id="app2" v-once>{{a}}</div> -->
+</body>
 
 <script>
-new Vue({
-  el: '#app',
+var msg = 'Hapi!'
+var app = new Vue({
+    el: '#app',
+    data: {
+      message: msg,
+      hmsg:'<h1>L O R Y</h1>'
+    },
+    computed:{
+      msgRes: function(){
+        return this.message.split('').reverse().join('')
+      }
+    }
+  })
+Vue.component('todo-item', {
+  props: ['todo'],
+  template: '<li>{{ todo.text }}</li>'
+})
+var app2 = new Vue({
+  el: '#app2',
   data: {
-    message: 'Hapi!'
+    a : '你改不了我'
   }
 })
-{var i = 5}
-console.log(i)
-function f() { console.log('I am outside!'); }
-(function () {
-  if (false) {
-    function f() { console.log('I am inside!'); }
+Vue.component('my-child', {
+  props:['myMessage'],
+  template:'<div>\
+            <button v-on:click="f2">{{ counter }}{{ myMessage }}</button>\
+            <slot>这里又一些备用信息<slot>\
+            ==============\
+            <slot>这里又一些备用信息<slot>\
+            </div>',
+  data: function(){
+    return {counter: 0}
+  },
+  methods:{
+    f2: function(){
+      this.counter += 1
+      this.$emit('f3')
+    }
   }
-  f();
-}());       //According to standard, it's right but this is not the truth. Safari seem it as var, not let which is right however
+})
+
+var app7 = new Vue({
+  el: '#app-7',
+  data: {
+    groceryList: [
+      { id: 0, text: '蔬菜' },
+      { id: 1, text: '奶酪' },
+      { id: 2, text: '随便其它什么人吃的东西' }
+    ],
+    tot: 0
+  },
+  methods: {
+    f1 : function(){
+      this.tot ++
+    }
+  }
+})
+
+
+// {i = 5}   // Using var as default. so no exception below.
+// console.log(i)
+// function f() { console.log('I am outside!'); }
+// (function () {
+//   //f();    // Excetion here
+//   if (true) {   // False in e.g.
+//     f();    // Right
+//     function f() { console.log('I am inside!'); }
+//     f();    // Right
+//   }
+//   f();    //Right
+// }());
+// All block-level scope we talk means code in {}
+// ES5 didn't support declare in block-level scope, ES6 don't like this. But safari did as its way all the time.
+// ES5 declare a variable using var and function, ES6 added let, const, import, class additional.
+// According to standard, it's right but this is not the truth. Safari seem it as var, not let which is right however, so it's like:
+
+// function f() { console.log('I am outside!'); }
+// (function () {
+//   var f = undefined;
+//   if (false) {
+//     function f() { console.log('I am inside!'); }
+//   }
+//   f();
+// }());
+
+// There is temporary dead zone in let and const.
+
+// if (true)
+//   function f() {}   // According to standard because no {} in block-level scope in ES6, ES5 didn't support declare function in block-level scope in fact, it's wrong, but no exception here.
+
+// let a = 1
+// let a = 1   // Exception here.
+
+// const foo = {};   // foo is a pointor here, pointor is immutable.
+// foo.prop = 123;
+// foo.prop = 123;
+// foo = {}   // Wrong here, only here
+
+// Freeze...
+// var constantize = (obj) => {
+//   Object.freeze(obj);
+//   Object.keys(obj).forEach( (key, i) => {
+//     if ( typeof obj[key] === 'object' ) {
+//       constantize( obj[key] );
+//     }
+//   });
+// }; 
+// console.log(self)
+// console.log(this)
+// {
+//   let i = 1
+//   console.log(self)   // == this.
+//   console.log(i)
+// }
 </script>
 </body>
+
 </html>
